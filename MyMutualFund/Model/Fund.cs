@@ -7,7 +7,7 @@ namespace MyMutualFind.Model
     public class Fund
     {
         public string TickerSymbol { get; }
-        decimal CashAvailable { get; set }
+        decimal CashAvailable { get; set; }
         int QtyOfShares { get; }
         decimal PricePerShare { get; }
 
