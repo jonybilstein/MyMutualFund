@@ -8,10 +8,14 @@ namespace MyMutualFind.Model
 {
     public class Share
     {
-        string ShareId { get;  }
-        string Symbol { get;  }
-        public decimal SharePrice { get;  }
+        public string ShareId { get; set; }
+        public string Symbol { get; set; }
+        public decimal SharePrice { get; set; }
 
+        public Share()
+        {
+
+        }
 
     }
 }

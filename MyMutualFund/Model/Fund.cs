@@ -1,40 +1,49 @@
 ﻿using MyMutualFind.Interfaces;
-
-
+using System.Reflection.Metadata.Ecma335;
 
 namespace MyMutualFind.Model
 {
     public class Fund
     {
         public string TickerSymbol { get; }
-        decimal CashAvailable { get; set; }
-        int QtyOfShares { get; }
-        decimal PricePerShare { get; }
+        public decimal CashAvailable { get; set; }
+        public int QtyOfShares { get; private set; }
 
-        List<Share> PortFolio { get; }
+        public decimal PricePerShare
+        {
+            get
+            {
+                var sumOfShares = PortFolio.Sum(x => x.SharePrice);
+                return sumOfShares / QtyOfShares;
+            }
+        }
+
+        public List<Share> PortFolio { get; set; }
 
         IStockExchangeCenter _StockExchangeCenter;
 
-        public Fund(string tickerSymbol, int initialQtyOfShares, IStockExchangeCenter stockExchangeCenter)
+        public Fund(string tickerSymbol, IStockExchangeCenter stockExchangeCenter, decimal initialCash)
         {
             TickerSymbol = tickerSymbol;
             PortFolio = new List<Share>();
-            this.QtyOfShares = initialQtyOfShares;
             this._StockExchangeCenter = stockExchangeCenter;
+            this.CashAvailable = initialCash;
         }
 
-        public (bool, Share) Buy(string symbol)
+        public (bool, Share?) Buy(string symbol)
         {
 
-            _StockExchangeCenter.PeekShare(symbol);
+            var sharePrice = _StockExchangeCenter.PeekShare(symbol).SharePrice;
 
-            if (CashAvailable <= CashAvailable) return (false, null);
+            if (CashAvailable <= sharePrice) return (false, null);
+
 
             var shareBought = _StockExchangeCenter.Sell(symbol);
             if (shareBought != null)
             {
                 PortFolio.Add(shareBought);
                 CashAvailable -= shareBought.SharePrice;
+                QtyOfShares++;
             }
 
             return (true, shareBought);
