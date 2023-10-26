@@ -53,10 +53,34 @@ namespace MyMutualFund.Tests
 
             Assert.IsFalse(x.Item1);
             Assert.IsNull(x.Item2);
-            
+
             Assert.IsTrue(fund.QtyOfShares == 0);
             Assert.IsTrue(fund.CashAvailable == 8);
             Assert.IsTrue(!fund.PortFolio.Any());
+
+        }
+
+        [TestMethod]
+        public void PricePerShare_Correct()
+        {
+            var randomShareOne = FundTests.GetRandomShare();
+            var randomShareTwo = FundTests.GetRandomShare();
+
+
+
+            NYSEMock.Setup(x => x.Sell(randomShareOne.Symbol)).Returns(randomShareOne);
+            NYSEMock.Setup(x => x.PeekShare(randomShareOne.Symbol)).Returns(randomShareOne);
+
+            NYSEMock.Setup(x => x.Sell(randomShareTwo.Symbol)).Returns(randomShareTwo);
+            NYSEMock.Setup(x => x.PeekShare(randomShareTwo.Symbol)).Returns(randomShareTwo);
+
+
+            Fund fund = new Fund("JJLK", NYSEMock.Object, 200000);
+            var x = fund.Buy(randomShareOne.Symbol);
+            var x2 = fund.Buy(randomShareTwo.Symbol);
+            var y = fund.Buy(randomShareTwo.Symbol);
+
+            Assert.AreEqual(fund.PricePerShare, (x.Item2.SharePrice + x2.Item2.SharePrice + y.Item2.SharePrice) / 3);
 
         }
 
