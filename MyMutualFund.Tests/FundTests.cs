@@ -11,43 +11,66 @@ namespace MyMutualFund.Tests
 
 
         static Mock<IStockExchangeCenter> NYSEMock = new Mock<IStockExchangeCenter>();
-        
-        
+        static Random Rand = new Random();
+
         [TestInitialize]
         public void SetUp()
         {
 
-            NYSEMock.Setup(x => x.Sell(It.IsAny<string>())).Returns(GetShare());
-           
+
+
         }
 
         [TestMethod]
         public void BuyShares_UpdatesBalanceAndSharePrice()
         {
+
+            var randomShare = FundTests.GetRandomShare();
+
+            NYSEMock.Setup(x => x.Sell(randomShare.Symbol)).Returns(randomShare);
+            NYSEMock.Setup(x => x.PeekShare(randomShare.Symbol)).Returns(randomShare);
+
+
             Fund fund = new Fund("JJLK", NYSEMock.Object, 200000);
-            
-            var x = fund.Buy("AAJL");
+            var x = fund.Buy(randomShare.Symbol);
+
             Assert.IsTrue(fund.QtyOfShares == 1);
             Assert.IsTrue(fund.CashAvailable + x.Item2.SharePrice == 200000);
+            Assert.AreEqual(fund.PortFolio.Single(), randomShare);
+        }
+
+        [TestMethod]
+        public void BuyShares_DoesNotBuyWhenBalanceIsNegative()
+        {
+            var randomShare = FundTests.GetRandomShare();
+
+            NYSEMock.Setup(x => x.Sell(randomShare.Symbol)).Returns(randomShare);
+            NYSEMock.Setup(x => x.PeekShare(randomShare.Symbol)).Returns(randomShare);
+
+
+            Fund fund = new Fund("JJLK", NYSEMock.Object, 8);
+            var x = fund.Buy(randomShare.Symbol);
+
+            Assert.IsFalse(x.Item1);
+            Assert.IsNull(x.Item2);
+            
+            Assert.IsTrue(fund.QtyOfShares == 0);
+            Assert.IsTrue(fund.CashAvailable == 8);
+            Assert.IsTrue(!fund.PortFolio.Any());
 
         }
 
-        public static Share GetShare()
+        public static Share GetRandomShare()
         {
-            var rand = new Random();
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var shareId = new string(Enumerable.Repeat(0, 10).Select(_ => chars[rand.Next(chars.Length)]).ToArray());
-            var shareSymbol = new string(Enumerable.Repeat(0, 4).Select(_ => chars[rand.Next(chars.Length)]).ToArray());
-
-
-
-            var randomSharePrice = new Decimal(rand.NextDouble() * (500 - 1) + 1);
+            var shareId = FundTests.GetRandomLetters(10);
+            var shareSymbol = FundTests.GetRandomLetters(4);
+            var sharePrice = FundTests.GetRandomPrice(10, 51);
 
 
             var shareToReturn = new Share()
             {
                 ShareId = shareId,
-                SharePrice = randomSharePrice,
+                SharePrice = sharePrice,
                 Symbol = shareSymbol
             };
 
@@ -57,15 +80,21 @@ namespace MyMutualFund.Tests
 
         }
 
-        public static string GetRandomSymbol(string symbol)
+        public static string GetRandomLetters(int length)
         {
-            var rand = new Random();
+
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            var shareSymbol = new string(Enumerable.Repeat(0, 4).Select(_ => chars[rand.Next(chars.Length)]).ToArray());
+            var shareSymbol = new string(Enumerable.Repeat(0, length).Select(_ => chars[Rand.Next(chars.Length)]).ToArray());
 
             return shareSymbol;
 
+        }
 
+
+        public static decimal GetRandomPrice(double min, double max)
+        {
+
+            return new Decimal(Rand.NextDouble() * (max - min) + 1);
 
         }
 
