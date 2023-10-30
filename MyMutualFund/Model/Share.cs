@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyMutualFind.Model
+namespace MyMutualFund.Model
 {
     public class Share
     {

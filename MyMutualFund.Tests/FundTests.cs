@@ -1,6 +1,6 @@
 using Moq;
-using MyMutualFind.Interfaces;
-using MyMutualFind.Model;
+using MyMutualFund.Interfaces;
+using MyMutualFund.Model;
 using System;
 
 namespace MyMutualFund.Tests
@@ -26,9 +26,10 @@ namespace MyMutualFund.Tests
         {
 
             var randomShare = FundTests.GetRandomShare();
+            randomShare.Symbol = "LLSA";
 
             NYSEMock.Setup(x => x.Sell(randomShare.Symbol)).Returns(randomShare);
-            NYSEMock.Setup(x => x.PeekShare(randomShare.Symbol)).Returns(randomShare);
+            NYSEMock.Setup(x => x.CheckPrice(randomShare.Symbol,It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShare.Symbol, Price = randomShare.SharePrice });
 
 
             Fund fund = new Fund("JJLK", NYSEMock.Object, 200000);
@@ -45,7 +46,8 @@ namespace MyMutualFund.Tests
             var randomShare = FundTests.GetRandomShare();
 
             NYSEMock.Setup(x => x.Sell(randomShare.Symbol)).Returns(randomShare);
-            NYSEMock.Setup(x => x.PeekShare(randomShare.Symbol)).Returns(randomShare);
+            NYSEMock.Setup(x => x.CheckPrice(randomShare.Symbol,It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShare.Symbol, Price = randomShare.SharePrice });
+
 
 
             Fund fund = new Fund("JJLK", NYSEMock.Object, 8);
@@ -69,10 +71,11 @@ namespace MyMutualFund.Tests
 
 
             NYSEMock.Setup(x => x.Sell(randomShareOne.Symbol)).Returns(randomShareOne);
-            NYSEMock.Setup(x => x.PeekShare(randomShareOne.Symbol)).Returns(randomShareOne);
+            NYSEMock.Setup(x => x.CheckPrice(randomShareOne.Symbol, It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShareOne.Symbol, Price = randomShareOne.SharePrice });
+
 
             NYSEMock.Setup(x => x.Sell(randomShareTwo.Symbol)).Returns(randomShareTwo);
-            NYSEMock.Setup(x => x.PeekShare(randomShareTwo.Symbol)).Returns(randomShareTwo);
+            NYSEMock.Setup(x => x.CheckPrice(randomShareTwo.Symbol, It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShareTwo.Symbol, Price = randomShareTwo.SharePrice });
 
 
             Fund fund = new Fund("JJLK", NYSEMock.Object, 200000);
@@ -119,6 +122,41 @@ namespace MyMutualFund.Tests
         {
 
             return new Decimal(Rand.NextDouble() * (max - min) + 1);
+
+        }
+
+        [TestMethod]
+        public void SellShares_UpdatesBalanceAndSharePrice()
+        {
+            var randomShare = FundTests.GetRandomShare();
+
+            NYSEMock.Setup(x => x.Buy(randomShare)).Returns(true);
+            NYSEMock.Setup(x => x.Sell(randomShare.Symbol)).Returns(randomShare);
+            NYSEMock.Setup(x => x.CheckPrice(randomShare.Symbol, It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShare.Symbol, Price = randomShare.SharePrice });
+
+
+            Fund fund = new Fund("JJLK", NYSEMock.Object, 10000);
+            var boughtShare = fund.Buy(randomShare.Symbol);
+            var soldShare = fund.Sell(randomShare.Symbol);
+
+
+            Assert.IsTrue(fund.QtyOfShares == 0);
+            Assert.IsTrue(fund.CashAvailable == 10000);
+            Assert.AreEqual(fund.PortFolio.Any(), false);
+        }
+
+        [TestMethod]
+        public void SellShares_DoesNotSellNonExistingShare()
+        {
+            var randomShare = FundTests.GetRandomShare();
+
+
+            Fund fund = new Fund("JJLK", NYSEMock.Object, 10000);
+            var soldShare = fund.Sell("JSTT");
+
+
+            Assert.IsTrue(soldShare.Item1 == false);
+            Assert.IsTrue(soldShare.Item2 == null);
 
         }
 

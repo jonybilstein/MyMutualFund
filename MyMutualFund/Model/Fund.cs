@@ -1,7 +1,7 @@
-﻿using MyMutualFind.Interfaces;
+﻿using MyMutualFund.Interfaces;
 using System.Reflection.Metadata.Ecma335;
 
-namespace MyMutualFind.Model
+namespace MyMutualFund.Model
 {
     public class Fund
     {
@@ -33,7 +33,7 @@ namespace MyMutualFind.Model
         public (bool, Share?) Buy(string symbol)
         {
 
-            var sharePrice = _StockExchangeCenter.PeekShare(symbol).SharePrice;
+            var sharePrice = _StockExchangeCenter.CheckPrice(symbol, DateTime.Now).Price;
 
             if (CashAvailable <= sharePrice) return (false, null);
 
@@ -47,6 +47,30 @@ namespace MyMutualFind.Model
             }
 
             return (true, shareBought);
+
+        }
+
+        public (bool, Share?) Sell(string symbol)
+        {
+
+            var shareToSell = PortFolio.Where(x => { return x.Symbol == symbol; }).ToList().SingleOrDefault();
+
+
+            if (shareToSell == null)
+            {
+                return (false, null);
+            }
+
+            var buyConfirmed = _StockExchangeCenter.Buy(shareToSell);
+
+            if (buyConfirmed)
+            {
+                PortFolio.Remove(shareToSell);
+                CashAvailable += shareToSell.SharePrice;
+                QtyOfShares--;
+            }
+
+            return (true, shareToSell);
 
         }
 
