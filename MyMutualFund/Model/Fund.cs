@@ -1,5 +1,5 @@
 ﻿using MyMutualFund.Interfaces;
-using System.Reflection.Metadata.Ecma335;
+
 
 namespace MyMutualFund.Model
 {
@@ -30,7 +30,7 @@ namespace MyMutualFund.Model
             this.CashAvailable = initialCash;
         }
 
-        public (bool, Share?) Buy(string symbol)
+        public (bool, Share?) Buy(string symbol, DateTime date)
         {
 
             var sharePrice = _StockExchangeCenter.CheckPrice(symbol, DateTime.Now).Price;
@@ -38,7 +38,7 @@ namespace MyMutualFund.Model
             if (CashAvailable <= sharePrice) return (false, null);
 
 
-            var shareBought = _StockExchangeCenter.Sell(symbol);
+            var shareBought = _StockExchangeCenter.Sell(symbol, date);
             if (shareBought != null)
             {
                 PortFolio.Add(shareBought);
@@ -50,7 +50,7 @@ namespace MyMutualFund.Model
 
         }
 
-        public (bool, Share?) Sell(string symbol)
+        public (bool, Share?) Sell(string symbol, DateTime date)
         {
 
             var shareToSell = PortFolio.Where(x => { return x.Symbol == symbol; }).ToList().SingleOrDefault();
@@ -61,7 +61,7 @@ namespace MyMutualFund.Model
                 return (false, null);
             }
 
-            var buyConfirmed = _StockExchangeCenter.Buy(shareToSell);
+            var buyConfirmed = _StockExchangeCenter.Buy(shareToSell, date);
 
             if (buyConfirmed)
             {

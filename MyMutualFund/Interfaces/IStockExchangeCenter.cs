@@ -10,8 +10,8 @@ namespace MyMutualFund.Interfaces
     public interface IStockExchangeCenter
     {
         IStockPriceChecker Checker { get; set; }
-        Share Sell(string tickerSymbol);
-        StockPrice CheckPrice(string tickerSymbol, DateTime date);
-        bool Buy(Share share);
+        Share Sell(string tickerSymbol, DateTime date);
+        StockPrice? CheckPrice(string tickerSymbol, DateTime date);
+        bool Buy(Share share, DateTime date);
     }
 }

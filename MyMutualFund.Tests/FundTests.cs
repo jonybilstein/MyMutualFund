@@ -28,12 +28,12 @@ namespace MyMutualFund.Tests
             var randomShare = FundTests.GetRandomShare();
             randomShare.Symbol = "LLSA";
 
-            NYSEMock.Setup(x => x.Sell(randomShare.Symbol)).Returns(randomShare);
+            NYSEMock.Setup(x => x.Sell(randomShare.Symbol, It.IsAny<DateTime>())).Returns(randomShare);
             NYSEMock.Setup(x => x.CheckPrice(randomShare.Symbol,It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShare.Symbol, Price = randomShare.SharePrice });
 
 
             Fund fund = new Fund("JJLK", NYSEMock.Object, 200000);
-            var x = fund.Buy(randomShare.Symbol);
+            var x = fund.Buy(randomShare.Symbol, DateTime.Now);
 
             Assert.IsTrue(fund.QtyOfShares == 1);
             Assert.IsTrue(fund.CashAvailable + x.Item2.SharePrice == 200000);
@@ -45,13 +45,13 @@ namespace MyMutualFund.Tests
         {
             var randomShare = FundTests.GetRandomShare();
 
-            NYSEMock.Setup(x => x.Sell(randomShare.Symbol)).Returns(randomShare);
+            NYSEMock.Setup(x => x.Sell(randomShare.Symbol,It.IsAny<DateTime>())).Returns(randomShare);
             NYSEMock.Setup(x => x.CheckPrice(randomShare.Symbol,It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShare.Symbol, Price = randomShare.SharePrice });
 
 
 
             Fund fund = new Fund("JJLK", NYSEMock.Object, 8);
-            var x = fund.Buy(randomShare.Symbol);
+            var x = fund.Buy(randomShare.Symbol, DateTime.Now);
 
             Assert.IsFalse(x.Item1);
             Assert.IsNull(x.Item2);
@@ -70,18 +70,18 @@ namespace MyMutualFund.Tests
 
 
 
-            NYSEMock.Setup(x => x.Sell(randomShareOne.Symbol)).Returns(randomShareOne);
+            NYSEMock.Setup(x => x.Sell(randomShareOne.Symbol, It.IsAny<DateTime>())).Returns(randomShareOne);
             NYSEMock.Setup(x => x.CheckPrice(randomShareOne.Symbol, It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShareOne.Symbol, Price = randomShareOne.SharePrice });
 
 
-            NYSEMock.Setup(x => x.Sell(randomShareTwo.Symbol)).Returns(randomShareTwo);
+            NYSEMock.Setup(x => x.Sell(randomShareTwo.Symbol, It.IsAny<DateTime>())).Returns(randomShareTwo);
             NYSEMock.Setup(x => x.CheckPrice(randomShareTwo.Symbol, It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShareTwo.Symbol, Price = randomShareTwo.SharePrice });
 
 
             Fund fund = new Fund("JJLK", NYSEMock.Object, 200000);
-            var x = fund.Buy(randomShareOne.Symbol);
-            var x2 = fund.Buy(randomShareTwo.Symbol);
-            var y = fund.Buy(randomShareTwo.Symbol);
+            var x = fund.Buy(randomShareOne.Symbol, DateTime.Now);
+            var x2 = fund.Buy(randomShareTwo.Symbol, DateTime.Now);
+            var y = fund.Buy(randomShareTwo.Symbol, DateTime.Now);
 
             Assert.AreEqual(fund.PricePerShare, (x.Item2.SharePrice + x2.Item2.SharePrice + y.Item2.SharePrice) / 3);
 
@@ -130,14 +130,14 @@ namespace MyMutualFund.Tests
         {
             var randomShare = FundTests.GetRandomShare();
 
-            NYSEMock.Setup(x => x.Buy(randomShare)).Returns(true);
-            NYSEMock.Setup(x => x.Sell(randomShare.Symbol)).Returns(randomShare);
+            NYSEMock.Setup(x => x.Buy(randomShare,It.IsAny<DateTime>())).Returns(true);
+            NYSEMock.Setup(x => x.Sell(randomShare.Symbol, It.IsAny<DateTime>())).Returns(randomShare);
             NYSEMock.Setup(x => x.CheckPrice(randomShare.Symbol, It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShare.Symbol, Price = randomShare.SharePrice });
 
 
             Fund fund = new Fund("JJLK", NYSEMock.Object, 10000);
-            var boughtShare = fund.Buy(randomShare.Symbol);
-            var soldShare = fund.Sell(randomShare.Symbol);
+            var boughtShare = fund.Buy(randomShare.Symbol, DateTime.Now);
+            var soldShare = fund.Sell(randomShare.Symbol,DateTime.Now);
 
 
             Assert.IsTrue(fund.QtyOfShares == 0);
@@ -152,7 +152,7 @@ namespace MyMutualFund.Tests
 
 
             Fund fund = new Fund("JJLK", NYSEMock.Object, 10000);
-            var soldShare = fund.Sell("JSTT");
+            var soldShare = fund.Sell("JSTT", DateTime.Now);
 
 
             Assert.IsTrue(soldShare.Item1 == false);
