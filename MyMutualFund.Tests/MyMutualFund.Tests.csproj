@@ -19,6 +19,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MyMutualFund\MyMutualFind.csproj" />
+    <ProjectReference Include="..\MyMutualFund\MyMutualFund.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Source\StockPrices.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

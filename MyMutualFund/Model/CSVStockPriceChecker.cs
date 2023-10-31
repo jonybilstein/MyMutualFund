@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyMutualFind.Model
+namespace MyMutualFund.Model
 {
     public class CSVStockPriceChecker : IStockPriceChecker
     {
@@ -15,7 +15,7 @@ namespace MyMutualFind.Model
         private List<StockPrice> StockPrices = new List<StockPrice>();
         public StockPrice? GetPrice(string symbol, DateTime date)
         {
-            var stockPriceObj = StockPrices.Where(x => x.TickerSymbol == symbol).OrderByDescending(x => x.Date).FirstOrDefault();
+            var stockPriceObj = StockPrices.Where(x => x.TickerSymbol == symbol && x.Date <= date).OrderByDescending(x => x.Date).FirstOrDefault();
             return stockPriceObj;
         }
 
@@ -26,7 +26,7 @@ namespace MyMutualFind.Model
             while (!reader.EndOfStream)
             {
                 var line = reader.ReadLine();
-                var values = line.Split(',');
+                var values = line.Split('\t');
                 var price = new StockPrice()
                 {
                     TickerSymbol = values[0],
