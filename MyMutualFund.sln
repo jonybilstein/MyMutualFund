@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyMutualFund.Tests", "MyMut
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyMutualFund", "MyMutualFund\MyMutualFund.csproj", "{F84610E8-7BCD-45A5-99B8-F76F1AE7BA80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMutualFundCalculateROIExample", "MyMutualFundCalculateROIExample\MyMutualFundCalculateROIExample.csproj", "{B5DA2836-7366-4C8D-AE07-D13054680434}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F84610E8-7BCD-45A5-99B8-F76F1AE7BA80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F84610E8-7BCD-45A5-99B8-F76F1AE7BA80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F84610E8-7BCD-45A5-99B8-F76F1AE7BA80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5DA2836-7366-4C8D-AE07-D13054680434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5DA2836-7366-4C8D-AE07-D13054680434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5DA2836-7366-4C8D-AE07-D13054680434}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5DA2836-7366-4C8D-AE07-D13054680434}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,15 +7,12 @@ namespace MyMutualFund.Model
     {
         public string TickerSymbol { get; }
         public decimal CashAvailable { get; set; }
-        public int QtyOfShares { get; private set; }
+        public int QtyOfShares { get;  set; }
 
-        public decimal PricePerShare
+        public decimal PricePerShare(DateTime date)
         {
-            get
-            {
-                var sumOfShares = PortFolio.Sum(x => x.SharePrice);
-                return sumOfShares / QtyOfShares;
-            }
+            var sumOfShares = PortFolio.Sum(x => _StockExchangeCenter.CheckPrice(x.Symbol, date).Price);
+            return (sumOfShares + this.CashAvailable) / QtyOfShares;
         }
 
         public List<Share> PortFolio { get; set; }
@@ -43,7 +40,6 @@ namespace MyMutualFund.Model
             {
                 PortFolio.Add(shareBought);
                 CashAvailable -= shareBought.SharePrice;
-                QtyOfShares++;
             }
 
             return (true, shareBought);
@@ -53,7 +49,7 @@ namespace MyMutualFund.Model
         public (bool, Share?) Sell(string symbol, DateTime date)
         {
 
-            var shareToSell = PortFolio.Where(x => { return x.Symbol == symbol; }).ToList().SingleOrDefault();
+            var shareToSell = PortFolio.Where(x => { return x.Symbol == symbol; }).ToList().FirstOrDefault();
 
 
             if (shareToSell == null)
@@ -67,7 +63,6 @@ namespace MyMutualFund.Model
             {
                 PortFolio.Remove(shareToSell);
                 CashAvailable += shareToSell.SharePrice;
-                QtyOfShares--;
             }
 
             return (true, shareToSell);

@@ -28,8 +28,8 @@ namespace MyMutualFund.Tests
             var csv_checker = new CSVStockPriceChecker();
             csv_checker.LoadCSV(path);
 
-            var priceInfo = csv_checker.GetPrice("APPL", DateTime.Parse("2023-10-31 09:00:00"));
-            Assert.IsTrue(priceInfo.Price == 423);
+            var priceInfo = csv_checker.GetPrice("WLTW", DateTime.Parse("2016-01-07 02:00:00"));
+            Assert.IsTrue(priceInfo.Price == Decimal.Parse("119.980003"));
 
         }
 

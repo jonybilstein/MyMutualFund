@@ -22,20 +22,21 @@ namespace MyMutualFund.Model
         public bool LoadCSV(string path)
         {
             using var reader = new StreamReader(path);
-            
+
+            reader.ReadLine(); // title
             while (!reader.EndOfStream)
             {
                 var line = reader.ReadLine();
-                var values = line.Split('\t');
+                var values = line.Split(',');
                 var price = new StockPrice()
                 {
-                    TickerSymbol = values[0],
-                    Date = DateTime.Parse(values[1]),
-                    Price = decimal.Parse(values[2])
+                    TickerSymbol = values[1],
+                    Date = DateTime.Parse(values[0]),
+                    Price = decimal.Parse(values[3])
                 };
                 StockPrices.Add(price);
             }
-            
+
             return true;
         }
     }

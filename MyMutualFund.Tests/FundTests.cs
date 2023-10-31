@@ -29,14 +29,14 @@ namespace MyMutualFund.Tests
             randomShare.Symbol = "LLSA";
 
             NYSEMock.Setup(x => x.Sell(randomShare.Symbol, It.IsAny<DateTime>())).Returns(randomShare);
-            NYSEMock.Setup(x => x.CheckPrice(randomShare.Symbol,It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShare.Symbol, Price = randomShare.SharePrice });
+            NYSEMock.Setup(x => x.CheckPrice(randomShare.Symbol, It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShare.Symbol, Price = randomShare.SharePrice });
 
 
-            Fund fund = new Fund("JJLK", NYSEMock.Object, 200000);
+            Fund fund = new Fund("JJLK", NYSEMock.Object, 1000);
+            fund.QtyOfShares = 2;
             var x = fund.Buy(randomShare.Symbol, DateTime.Now);
 
-            Assert.IsTrue(fund.QtyOfShares == 1);
-            Assert.IsTrue(fund.CashAvailable + x.Item2.SharePrice == 200000);
+            Assert.IsTrue(fund.CashAvailable + x.Item2.SharePrice == 1000);
             Assert.AreEqual(fund.PortFolio.Single(), randomShare);
         }
 
@@ -45,8 +45,8 @@ namespace MyMutualFund.Tests
         {
             var randomShare = FundTests.GetRandomShare();
 
-            NYSEMock.Setup(x => x.Sell(randomShare.Symbol,It.IsAny<DateTime>())).Returns(randomShare);
-            NYSEMock.Setup(x => x.CheckPrice(randomShare.Symbol,It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShare.Symbol, Price = randomShare.SharePrice });
+            NYSEMock.Setup(x => x.Sell(randomShare.Symbol, It.IsAny<DateTime>())).Returns(randomShare);
+            NYSEMock.Setup(x => x.CheckPrice(randomShare.Symbol, It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShare.Symbol, Price = randomShare.SharePrice });
 
 
 
@@ -56,7 +56,6 @@ namespace MyMutualFund.Tests
             Assert.IsFalse(x.Item1);
             Assert.IsNull(x.Item2);
 
-            Assert.IsTrue(fund.QtyOfShares == 0);
             Assert.IsTrue(fund.CashAvailable == 8);
             Assert.IsTrue(!fund.PortFolio.Any());
 
@@ -78,12 +77,19 @@ namespace MyMutualFund.Tests
             NYSEMock.Setup(x => x.CheckPrice(randomShareTwo.Symbol, It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShareTwo.Symbol, Price = randomShareTwo.SharePrice });
 
 
-            Fund fund = new Fund("JJLK", NYSEMock.Object, 200000);
-            var x = fund.Buy(randomShareOne.Symbol, DateTime.Now);
-            var x2 = fund.Buy(randomShareTwo.Symbol, DateTime.Now);
-            var y = fund.Buy(randomShareTwo.Symbol, DateTime.Now);
+            Fund fund = new Fund("JJLK", NYSEMock.Object, 1000);
 
-            Assert.AreEqual(fund.PricePerShare, (x.Item2.SharePrice + x2.Item2.SharePrice + y.Item2.SharePrice) / 3);
+            var qtyOfShares = 3;
+            fund.QtyOfShares = qtyOfShares;
+
+            fund.Buy(randomShareOne.Symbol, DateTime.Now);
+            fund.Buy(randomShareTwo.Symbol, DateTime.Now);
+            fund.Buy(randomShareTwo.Symbol, DateTime.Now);
+
+
+
+
+            Assert.IsTrue(fund.PricePerShare(DateTime.Now) == (fund.CashAvailable + randomShareOne.SharePrice + (randomShareTwo.SharePrice * 2)) / qtyOfShares);
 
         }
 
@@ -130,14 +136,14 @@ namespace MyMutualFund.Tests
         {
             var randomShare = FundTests.GetRandomShare();
 
-            NYSEMock.Setup(x => x.Buy(randomShare,It.IsAny<DateTime>())).Returns(true);
+            NYSEMock.Setup(x => x.Buy(randomShare, It.IsAny<DateTime>())).Returns(true);
             NYSEMock.Setup(x => x.Sell(randomShare.Symbol, It.IsAny<DateTime>())).Returns(randomShare);
             NYSEMock.Setup(x => x.CheckPrice(randomShare.Symbol, It.IsAny<DateTime>())).Returns(new StockPrice { TickerSymbol = randomShare.Symbol, Price = randomShare.SharePrice });
 
 
             Fund fund = new Fund("JJLK", NYSEMock.Object, 10000);
             var boughtShare = fund.Buy(randomShare.Symbol, DateTime.Now);
-            var soldShare = fund.Sell(randomShare.Symbol,DateTime.Now);
+            var soldShare = fund.Sell(randomShare.Symbol, DateTime.Now);
 
 
             Assert.IsTrue(fund.QtyOfShares == 0);
