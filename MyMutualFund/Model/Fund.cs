@@ -69,6 +69,32 @@ namespace MyMutualFund.Model
 
         }
 
+        public List<(bool,Share?)> BuyMany (string symbol, DateTime date, int quantity)
+        {
+            var listOfSharesBought = new List<(bool, Share?)>();
+            
+            for (int x = 0 ; x < quantity; x++)
+            {
+                var shareBought = Buy(symbol, date);
+                listOfSharesBought.Add(shareBought);
+            }
+
+            return listOfSharesBought;
+        }
+
+        public List<(bool, Share?)> SellMany(string symbol, DateTime date, int quantity)
+        {
+            var listOfSharesSold = new List<(bool, Share?)>();
+
+            for (int x = 0; x < quantity; x++)
+            {
+                var shareSold = Sell(symbol, date);
+                listOfSharesSold.Add(shareSold);
+            }
+
+            return listOfSharesSold;
+        }
+
 
 
 
