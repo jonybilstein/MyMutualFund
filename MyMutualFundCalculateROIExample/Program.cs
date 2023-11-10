@@ -1,12 +1,6 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-
-
+﻿
 using MyMutualFund.Interfaces;
 using MyMutualFund.Model;
-
-
-
 
 var csvPriceCheker = new CSVStockPriceChecker();
 csvPriceCheker.LoadCSV(Directory.GetCurrentDirectory() + @"\source\prices.csv");
@@ -25,20 +19,10 @@ var Q1Shares = myFund.BuyMany("AAPL", Q1, 100)
     .Concat(myFund.BuyMany("MSFT", Q1, 100))
     .ToList();
 
-if (Q1Shares.Any(x => x.Item1 == false))
-{
-    Console.WriteLine("Error in Q1. Some shares could not be bought");
-    Console.ReadLine();
-    return;
-}
-
-
 
 Console.WriteLine($"Cash available in Q1: {myFund.CashAvailable.ToString()}");
 Console.WriteLine($"Price per share:{myFund.PricePerShare(Q1)}");
 Console.WriteLine();
-
-
 
 // Q2 
 Console.WriteLine("Sell 25 shares of AAPL and MSFT, Buy 200 shares of GS (Goldman Sachs) and C (Citigroup)");
@@ -50,12 +34,6 @@ var Q2Shares = myFund.SellMany("AAPL", Q1, 25)
     .Concat(myFund.BuyMany("C", Q1, 200));
 
 
-if (Q1Shares.Any(x => x.Item1 == false))
-{
-    Console.WriteLine("Error in Q2. Some shares could not be bought or sold");
-    Console.ReadLine();
-    return;
-}
 
 Console.WriteLine($"Cash available in Q2: {myFund.CashAvailable}");
 Console.WriteLine($"Price per share:{myFund.PricePerShare(Q2)}");
